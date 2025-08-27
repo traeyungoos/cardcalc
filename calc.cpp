@@ -7,19 +7,33 @@
 #include <unordered_set>
 #include <unordered_map>
 
+using std::string;
+using std::vector;
+using std::unordered_set;
+using std::unordered_map;
+using std::cout;
+using std::cin;
+using std::endl;
+using std::mt19937;
+using std::random_device;
+using std::istringstream;
+using std::getline;
+using std::find;
+using std::shuffle;
+
 class CardGame {
 private:
     static constexpr int HAND_SIZE = 7;
     static constexpr int DECK_SIZE = 52;
     
-    std::vector<std::string> deck;
-    std::vector<std::string> hand;
-    std::unordered_set<std::string> valid_cards;
-    std::mt19937 rng;
+    vector<string> deck;
+    vector<string> hand;
+    unordered_set<string> valid_cards;
+    mt19937 rng;
     
     void initialize_deck() {
-        const std::vector<std::string> suits = {"H", "D", "C", "S"};
-        const std::vector<std::string> values = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
+        const vector<string> suits = {"H", "D", "C", "S"};
+        const vector<string> values = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
         
         deck.clear();
         deck.reserve(DECK_SIZE);
@@ -27,29 +41,29 @@ private:
         
         for (const auto& suit : suits) {
             for (const auto& value : values) {
-                std::string card = suit + value;
+                string card = suit + value;
                 deck.push_back(card);
                 valid_cards.insert(card);
             }
         }
         
-        std::shuffle(deck.begin(), deck.end(), rng);
+        shuffle(deck.begin(), deck.end(), rng);
     }
     
     void print_hand() const {
-        std::cout << "Hand contains: ";
+        cout << "Hand contains: ";
         for (const auto& card : hand) {
-            std::cout << card << " ";
+            cout << card << " ";
         }
-        std::cout << std::endl;
+        cout << endl;
     }
     
-    std::vector<std::string> parse_discard_input(const std::string& input) const {
-        std::vector<std::string> cards_to_discard;
-        std::istringstream ss(input);
-        std::string token;
+    vector<string> parse_discard_input(const string& input) const {
+        vector<string> cards_to_discard;
+        istringstream ss(input);
+        string token;
         
-        while (std::getline(ss, token, ',')) {
+        while (getline(ss, token, ',')) {
             // Trim whitespace
             token.erase(0, token.find_first_not_of(" \t"));
             token.erase(token.find_last_not_of(" \t") + 1);
@@ -62,15 +76,15 @@ private:
         return cards_to_discard;
     }
     
-    bool validate_discard_cards(const std::vector<std::string>& cards_to_discard) const {
+    bool validate_discard_cards(const vector<string>& cards_to_discard) const {
         for (const auto& card : cards_to_discard) {
             if (valid_cards.find(card) == valid_cards.end()) {
-                std::cout << "Invalid card: " << card << std::endl;
+                cout << "Invalid card: " << card << endl;
                 return false;
             }
             
-            if (std::find(hand.begin(), hand.end(), card) == hand.end()) {
-                std::cout << "Card not in hand: " << card << std::endl;
+            if (find(hand.begin(), hand.end(), card) == hand.end()) {
+                cout << "Card not in hand: " << card << endl;
                 return false;
             }
         }
@@ -78,7 +92,7 @@ private:
     }
     
 public:
-    CardGame() : rng(std::random_device{}()) {
+    CardGame() : rng(random_device{}()) {
         hand.reserve(HAND_SIZE);
         initialize_deck();
     }
@@ -95,11 +109,11 @@ public:
         print_hand();
     }
     
-    bool discard_cards(const std::string& input) {
+    bool discard_cards(const string& input) {
         auto cards_to_discard = parse_discard_input(input);
         
         if (cards_to_discard.empty()) {
-            std::cout << "No cards specified for discard." << std::endl;
+            cout << "No cards specified for discard." << endl;
             return false;
         }
         
@@ -109,13 +123,13 @@ public:
         
         // Remove cards from hand
         for (const auto& card : cards_to_discard) {
-            auto it = std::find(hand.begin(), hand.end(), card);
+            auto it = find(hand.begin(), hand.end(), card);
             if (it != hand.end()) {
                 hand.erase(it);
             }
         }
         
-        std::cout << "Discarded " << cards_to_discard.size() << " card(s)." << std::endl;
+        cout << "Discarded " << cards_to_discard.size() << " card(s)." << endl;
         print_hand();
         return true;
     }
@@ -127,7 +141,7 @@ public:
         }
         
         if (hand.size() < HAND_SIZE) {
-            std::cout << "Warning: Not enough cards in deck to fill hand completely." << std::endl;
+            cout << "Warning: Not enough cards in deck to fill hand completely." << endl;
         }
         
         print_hand();
@@ -143,50 +157,50 @@ public:
     }
     
     void print_valid_cards() const {
-        std::cout << "Valid card format examples: H2, D10, CK, SA" << std::endl;
-        std::cout << "Suits: H(Hearts), D(Diamonds), C(Clubs), S(Spades)" << std::endl;
-        std::cout << "Values: 2-10, J, Q, K, A" << std::endl;
+        cout << "Valid card format examples: H2, D10, CK, SA" << endl;
+        cout << "Suits: H(Hearts), D(Diamonds), C(Clubs), S(Spades)" << endl;
+        cout << "Values: 2-10, J, Q, K, A" << endl;
     }
 };
 
 int main() {
     CardGame game;
     
-    std::cout << "=== Card Game ===" << std::endl;
+    cout << "=== Card Game ===" << endl;
     game.print_valid_cards();
-    std::cout << std::endl;
+    cout << endl;
     
     // Deal initial hand
-    std::cout << "Dealing initial hand..." << std::endl;
+    cout << "Dealing initial hand..." << endl;
     game.deal_initial_hand();
     
     while (true) {
-        std::cout << "\nCards remaining in deck: " << game.cards_remaining() << std::endl;
-        std::cout << "Enter cards to discard (comma-separated, or 'quit' to exit): ";
+        cout << "\nCards remaining in deck: " << game.cards_remaining() << endl;
+        cout << "Enter cards to discard (comma-separated, or 'quit' to exit): ";
         
-        std::string input;
-        std::getline(std::cin, input);
+        string input;
+        getline(cin, input);
         
         if (input == "quit" || input == "q") {
             break;
         }
         
         if (input.empty()) {
-            std::cout << "No cards to discard." << std::endl;
+            cout << "No cards to discard." << endl;
             continue;
         }
         
         if (game.discard_cards(input)) {
-            std::cout << "\nRefilling hand..." << std::endl;
+            cout << "\nRefilling hand..." << endl;
             game.refill_hand();
         }
         
         if (game.cards_remaining() == 0) {
-            std::cout << "\nDeck is empty! Game over." << std::endl;
+            cout << "\nDeck is empty! Game over." << endl;
             break;
         }
     }
     
-    std::cout << "Thanks for playing!" << std::endl;
+    cout << "Thanks for playing!" << endl;
     return 0;
 }
