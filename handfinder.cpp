@@ -222,7 +222,6 @@ void print_hand_combos() const {
             cout << "High Card" << endl;
         }
         
-        // Show detailed breakdown
         cout << "\nCard Value Breakdown:" << endl;
         auto value_counts = count_card_values();
         for (const auto& pair : value_counts) {
