@@ -21,8 +21,6 @@ g++ -std=c++17 -O2 card2.cpp -o card2
 ./card2
 ```
 
-Prebuilt Windows executables (`card2.exe`, `calc.exe`, `hand.exe`) are included.
-
 ## Usage
 
 Cards are written as **suit + value**:
